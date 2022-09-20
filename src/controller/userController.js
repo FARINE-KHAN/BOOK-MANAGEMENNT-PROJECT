@@ -1,5 +1,7 @@
 const userModel = require("../models/UserModel");
 const valid = require("../validator/validator");
+const jwt=require('jsonwebtoken')
+
 
 const createUser = async (req, res) => {
   try {
@@ -32,4 +34,30 @@ const createUser = async (req, res) => {
     res.status(500).send({ status: false, err: error.message });
   }
 };
-module.exports = { createUser };
+
+
+//////////////////////////////
+const loginUser=async function(req,res){
+  try {
+    let data=req.body;
+    let{email,password}=data;
+    
+    if (!valid.isValidRequestBody(data)) { return res.status(400).send({ status: false, msg: "plz provide data" }); }
+    if (!valid.isValidPassword(password)) { return res.status(400).send({status: false,
+      msg: "Your password must contain at least one alphabet one number and minimum 8character maximum 15",}); }
+    if (!valid.isValidEmail(email)) { return res.status(400).send({status: false, msg: " emailId is required and must be unique...!", }); }
+    
+    const user=await userModel.findOne({email:email,password:password})
+    if(!user){ return res.status(400).send({ status: false, msg: "User Not found" }); }
+    
+    const token=jwt.sign({userId:user._id.toString()},"Project-3_Group-5",{expiresIn:"240s"});
+    res.setHeader("x-auth-token", token)
+    res.status(201).send({status:true,message:"Login successfully...!",data:token})
+
+  } catch (error) {
+    res.status(500).send({ status: false, err: error.message });
+  }
+}
+
+
+module.exports = { createUser ,loginUser};

@@ -34,9 +34,12 @@ const isValidEmail = function (value) {
 };
 
 const isValidPassword = function (value) {
-  if (/^[a-zA-Z0-9@]{8,15}$/.test(value)) return true;
+  if ( typeof value === "string" &&
+  value.trim().length > 0 &&
+  /^[a-zA-Z0-9]{8,15}$/.test(value)) return true;
   return false;
 };
+
 const isValidRequestBody = function (requestBody) {
   return Object.keys(requestBody).length > 0;
 };

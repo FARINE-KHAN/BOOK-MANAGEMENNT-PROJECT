@@ -8,8 +8,6 @@ const app = express();
 app.use(bodyParser.json());
 // app.use(multer().any())
 // app.use(bodyParser.urlencoded({ extended: true }));
-
-
 mongoose.connect("mongodb+srv://sumitnegi:7KtRrUCkTMIMREOm@cluster0.diszcfl.mongodb.net/group5Database?retryWrites=true&w=majority", {
     useNewUrlParser: true
 })

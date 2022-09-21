@@ -25,11 +25,11 @@ try{
      if (!valid.isValidA(ISBN)||dublicateISBN) { return res.status(400).send({ status: false, msg: " ISBN is required"}); }
      if (!valid.isValid(category)) { return res.status(400).send({ status: false, msg: " category is required"}); }
      if (!valid.isValid(subcategory)) { return res.status(400).send({ status: false, msg: " subcategory is required"}); }
-      
-   //  let day ="2022/09/21";
-     let day = moment(data.releasedAt, "YYYY/MM/DD");
-     //res.status()
-     let savedData = await bookModel.create(day);
+     if(releasedAt){
+      if (!valid.isValidDate(releasedAt)) { return res.status(400).send({ status: false, msg: " releasedAt yyyy-mm-dd"}); }
+     }else{
+      data.releasedAt=moment().format("YYYY-MM-DD"); }
+     let savedData = await bookModel.create(data);
     res.status(201).send({ status: true, message: "success", data: savedData });
 }
 catch(error) {

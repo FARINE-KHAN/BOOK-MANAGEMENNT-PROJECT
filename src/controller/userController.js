@@ -63,7 +63,7 @@ const loginUser=async function(req,res){
     res.setHeader("x-auth-token", token)
 
 
-    res.status(201).send({status:true,message:"Login successfully...!",data:token, issuedAt:new Date(),expiresIn: exp})
+    res.status(201).send({status:true,message:"Login successfully...!",data:token, iat:new Date(),expiresIn: exp})
 
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });

@@ -27,6 +27,7 @@ try{
      if (!valid.isValidA(ISBN)||dublicateISBN) { return res.status(400).send({ status: false, msg: " ISBN is required"}); }
      if (!valid.isValid(category)) { return res.status(400).send({ status: false, msg: " category is required"}); }
      if (!valid.isValid(subcategory)) { return res.status(400).send({ status: false, msg: " subcategory is required"}); }
+<<<<<<< HEAD
       
    //  let day ="2022/09/21";
      let day = moment(data2.releasedAt, "YYYY/MM/DD");
@@ -35,6 +36,14 @@ try{
      //const data.day=day
      let savedData = await bookModel.create(data);
     res.status(201).send({ status: true, message: "success", data:[day,data]} );
+=======
+     if(releasedAt){
+      if (!valid.isValidDate(releasedAt)) { return res.status(400).send({ status: false, msg: " releasedAt yyyy-mm-dd"}); }
+     }else{
+      data.releasedAt=moment().format("YYYY-MM-DD"); }
+     let savedData = await bookModel.create(data);
+    res.status(201).send({ status: true, message: "success", data: savedData });
+>>>>>>> f09cc5ee9db637e69edf78eb9a1ec18155d5474e
 }
 catch(error) {
     res.status(500).send({ status: false, err: error.message });

@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const isValidName = function (value) {
-  if (typeof value === 'undefined' || value === null){return false;}
   if ( typeof value === "string" && value.trim().length > 0 && /^[A-Z][a-z]*\s[A-Z][a-z]\D*$/.test(value))
     {return true;}
    return false;
@@ -12,10 +11,6 @@ const isValid = function (value) {
   return false;
 };
 
-const isValidLink = function (value) {
-  if (/^https?:\/\/.*\.[s3].*\.(png|gif|webp|jpeg|jpg)\??.*$/gim.test(value)) return true;
-  return false;
-};
 
 const isValidMobile = function (value) {
   if (typeof value === "string" && /^[0-9]\d{9}$/gi.test(value)) return true;
@@ -36,6 +31,13 @@ const isValidPassword = function (value) {
   if ( typeof value === "string" && value.trim().length > 0 && /^[a-zA-Z0-9]{8,15}$/.test(value)) return true;
   return false;
 };
+const isValidDate = function (value) {
+  //if (typeof value === 'undefined' || value === null){return false;}
+ 
+  if ( typeof value === "string" && value.trim().length > 0 &&/^(18|19|20)[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value))
+   return true;
+  return false;
+};
 
 const isValidRequestBody = function (requestBody) {
   return Object.keys(requestBody).length > 0;
@@ -52,4 +54,4 @@ const isValidA = function (value) {
 
 
 module.exports = { isValid, isValidRequestBody, isValidObjectId, isValidEmail, isValidPassword,
- isValidName, isValidMobile, isValidLink, isValidpin,isValidA };
+ isValidName, isValidMobile, isValidpin,isValidA,isValidDate };

@@ -6,7 +6,9 @@ const userModel=require("../models/UserModel")
 const createbook=async function (req,res){
 try{
     let data =req.body
-    let {title,excerpt,userId,ISBN,category,subcategory,reviews,releasedAt}=data
+    let {title,excerpt,userId,ISBN,category,subcategory,reviews,}=data
+    let data2 =req.body.releasedAt
+    let {releasedAt}=data2
 
      //===emptyRequest===//
      if (!valid.isValidRequestBody(data)) { return res.status(400).send({ status: false, msg: "plz provide data" }); }
@@ -27,10 +29,12 @@ try{
      if (!valid.isValid(subcategory)) { return res.status(400).send({ status: false, msg: " subcategory is required"}); }
       
    //  let day ="2022/09/21";
-     let day = moment(data.releasedAt, "YYYY/MM/DD");
+     let day = moment(data2.releasedAt, "YYYY/MM/DD");
+
      //res.status()
-     let savedData = await bookModel.create(day);
-    res.status(201).send({ status: true, message: "success", data: savedData });
+     //const data.day=day
+     let savedData = await bookModel.create(data);
+    res.status(201).send({ status: true, message: "success", data:[day,data]} );
 }
 catch(error) {
     res.status(500).send({ status: false, err: error.message });

@@ -2,8 +2,6 @@ const bookModel =require("../models/bookModel")
 const valid=require("../validator/validator")
 const moment=require("moment")
 const userModel=require("../models/UserModel")
-const reviewModel=require("../models/reviewModel")
-
 const mongoose=require('mongoose')
 
 const createbook=async function (req,res){
@@ -30,23 +28,13 @@ try{
      if (!valid.isValidA(ISBN)||dublicateISBN) { return res.status(400).send({ status: false, msg: " ISBN is required"}); }
      if (!valid.isValid(category)) { return res.status(400).send({ status: false, msg: " category is required"}); }
      if (!valid.isValid(subcategory)) { return res.status(400).send({ status: false, msg: " subcategory is required"}); }
-<<<<<<< HEAD
-      
-   //  let day ="2022/09/21";
-     let day = moment(data2.releasedAt, "YYYY/MM/DD");
-
-     //res.status()
-     //const data.day=day
-     let savedData = await bookModel.create(data);
-    res.status(201).send({ status: true, message: "success", data:[day,data]} );
-=======
      if(releasedAt){
       if (!valid.isValidDate(releasedAt)) { return res.status(400).send({ status: false, msg: " releasedAt yyyy-mm-dd"}); }
      }else{
       data.releasedAt=moment().format("YYYY-MM-DD"); }
      let savedData = await bookModel.create(data);
     res.status(201).send({ status: true, message: "success", data: savedData });
->>>>>>> f09cc5ee9db637e69edf78eb9a1ec18155d5474e
+
 }
 catch(error) {
     res.status(500).send({ status: false, err: error.message });
@@ -81,21 +69,5 @@ if (returnBook.length > 0) {
   }
 }
 
-const getById= async (req,res)=>{
-let data=req.params.bookId
-if(data){
-  if (!mongoose.Types.ObjectId.isValid(data )) {
-    return res.status(400).send({ status: false, msg: "!!Oops blog id is not valid" });}
-  }
-let allbooks= await bookModel.findById(data)
-console.log(allbooks)
-if(!allbooks){
-  return res.status(400).send({status:false,msg:"book not found"})
-}
-let reviews= await reviewModel.find({bookId:data})
-const result = allbooks._doc;
-result.reviewsData = reviews;
-res.status(200).send({ status: true, message: "success", data: result });
-}
 
-module.exports={createbook,getBook,getById}
+module.exports={createbook,getBook}

@@ -6,7 +6,7 @@ const authenticate = (req, res, next) => {
             return res.status(401).send({ status: false, msg: "token is required" });
         jwt.verify(token, "Project-3_Group-5", function (error, decoded) {
             if (error) {
-                return res.status(401).send({ status: false, msg: "Authentication failed" });
+                return res.status(401).send({ status: false, msg: "Authentication failed Or Token Expired..!" });
             } else {
                 req.token = decoded;
                 next();

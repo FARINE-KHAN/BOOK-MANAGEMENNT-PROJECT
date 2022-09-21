@@ -57,7 +57,7 @@ const loginUser=async function(req,res){
     const user=await userModel.findOne({email:email,password:password})
     if(!user){ return res.status(400).send({ status: false, msg: "User Not found" }); }
     
-    let exp="60s";
+    let exp="5m";
 
     const token=jwt.sign({userId:user._id.toString()},"Project-3_Group-5",{expiresIn:exp});
     res.setHeader("x-auth-token", token)

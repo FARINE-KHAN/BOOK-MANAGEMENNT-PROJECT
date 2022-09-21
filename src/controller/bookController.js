@@ -2,6 +2,7 @@ const bookModel =require("../models/bookModel")
 const valid=require("../validator/validator")
 const moment=require("moment")
 const userModel=require("../models/UserModel")
+const mongoose=require('mongoose')
 
 const createbook=async function (req,res){
 try{
@@ -49,4 +50,34 @@ catch(error) {
     res.status(500).send({ status: false, err: error.message });
   }
 }
-module.exports={createbook}
+
+
+const getBook = async function (req, res){
+  try {
+    let data =req.query
+    const { userId, category, subcategory }=data
+
+if(userId){
+  if (!mongoose.Types.ObjectId.isValid(data.userId )) {
+    return res.status(400).send({ status: false, msg: "!!Oops User id is not valid" });}
+  
+  const findUser = await userModel.findById( userId )
+  if (!findUser) return res.status(404).send({ status: false, message: "This User Not exist" })
+  }
+    
+
+  const returnBook = await bookModel.find({ $and: [data, { isDeleted: false }] })
+  .select({title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+if (returnBook.length > 0) {
+  return res.status(200).send({ status: true, count: returnBook.length, message: "Book list", data: returnBook })
+} else {
+  res.status(404).send({ status: false, message: "No Book Found" })
+}
+
+  } catch (error) {
+    return res.status(500).send({ status: false, message: error.message })
+  }
+}
+
+
+module.exports={createbook,getBook}

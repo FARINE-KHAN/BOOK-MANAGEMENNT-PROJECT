@@ -19,6 +19,6 @@ const authenticate = (req, res, next) => {
 
 //const authorisation=async (req,res,next)=>{
     
-module.exports={authenticate,authorisation}
+module.exports={authenticate}//,authorisation}
 
 

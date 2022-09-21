@@ -2,8 +2,6 @@ const bookModel =require("../models/bookModel")
 const valid=require("../validator/validator")
 const moment=require("moment")
 const userModel=require("../models/UserModel")
-const reviewModel=require("../models/reviewModel")
-
 const mongoose=require('mongoose')
 
 const createbook=async function (req,res){
@@ -68,21 +66,5 @@ if (returnBook.length > 0) {
   }
 }
 
-const getById= async (req,res)=>{
-let data=req.params.bookId
-if(data){
-  if (!mongoose.Types.ObjectId.isValid(data )) {
-    return res.status(400).send({ status: false, msg: "!!Oops blog id is not valid" });}
-  }
-let allbooks= await bookModel.findById(data)
-console.log(allbooks)
-if(!allbooks){
-  return res.status(400).send({status:false,msg:"book not found"})
-}
-let reviews= await reviewModel.find({bookId:data})
-const result = allbooks._doc;
-result.reviewsData = reviews;
-res.status(200).send({ status: true, message: "success", data: result });
-}
 
-module.exports={createbook,getBook,getById}
+module.exports={createbook,getBook}

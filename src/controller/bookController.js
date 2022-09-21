@@ -68,5 +68,20 @@ if (returnBook.length > 0) {
   }
 }
 
-
-module.exports={createbook,getBook}
+const getById= async (req,res)=>{
+  let data=req.params.bookId
+  if(data){
+    if (!mongoose.Types.ObjectId.isValid(data )) {
+      return res.status(400).send({ status: false, msg: "!!Oops blog id is not valid" });}
+    }
+  let allbooks= await bookModel.findById(data)
+  console.log(allbooks)
+  if(!allbooks){
+    return res.status(400).send({status:false,msg:"book not found"})
+  }
+  let reviews= await reviewModel.find({bookId:data}).select('reviewedBy reviewedAt rating review')
+  const result = allbooks._doc;
+  result.reviewsData = reviews;
+  res.status(200).send({ status: true, message: "success", data: result });
+  }
+module.exports={createbook,getBook,getById}

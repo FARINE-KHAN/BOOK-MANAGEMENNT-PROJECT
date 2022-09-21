@@ -17,7 +17,7 @@ router.post("/login",userController.loginUser)
 
 router.post("/books",middleware.authentication,middleware.authorisation,bookController.createbook)
 router.get("/books",middleware.authentication,bookController.getBook)
-// router.get("/books/:bookId",middleware.authentication,bookController.getById)
+router.get("/books/:bookId",bookController.getById)
 
 router.post("/books/:bookId/review",reviewController.createReviwe)
 

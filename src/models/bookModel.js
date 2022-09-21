@@ -5,13 +5,13 @@ const bookSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true,
-        trim: true
+        unique: true
+        
     },
-    expert: {
+    excerpt: {
         type: String,
-        required: true,
-        trim: true
+        required: true
+        
     },
 
     userId: {
@@ -29,11 +29,11 @@ const bookSchema = mongoose.Schema({
         required: true,
         trim: true
     },
-    subcategory: [{
+    subcategory: {
         type: String,
         required: true,
         trim: true
-    }],
+    },
     reviews: {
         type: Number,
         default: 0

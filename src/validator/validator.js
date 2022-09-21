@@ -45,6 +45,11 @@ const isValidObjectId = function (objectId) {
   return mongoose.isValidObjectId(objectId);
 };
 
+const isValidA = function (value) {
+  if ( typeof value === "string" && value.trim().length > 0 && /^\+?([1-9]{3})\)?[-. ]?([0-9]{10})$/.test(value)) return true;
+  return false;
+};
+
 
 module.exports = { isValid, isValidRequestBody, isValidObjectId, isValidEmail, isValidPassword,
- isValidName, isValidMobile, isValidLink, isValidpin };
+ isValidName, isValidMobile, isValidLink, isValidpin,isValidA };

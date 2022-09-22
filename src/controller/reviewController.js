@@ -35,10 +35,8 @@ const createReviwe=async function(req,res){
           }
 
           const createdReview = await reviewModel.create(obj)
-          res.status(201).send({ status: true, message: "success", data: createdReview });
-
-          
-
+          res.status(201).send({ status: true, message: "success", data: createdReview })
+    
 
     }catch(error) {
         res.status(500).send({ status: false, err: error.message });

@@ -8,41 +8,68 @@ const createReviwe=async function(req,res){
     try {
         const reviewData = req.body
         const bookId = req.params.bookId
-        const { reviewedBy, rating, review } = reviewData;
+     if (!valid.isValidRequestBody(reviewData)) { return res.status(400).send({ status: false, msg: "plz provide data" }); }
+    
+        const {  rating,reviewedBy } = reviewData;
 
-        if (!bookId) return res.status(400).send({ status: false, message: "BookId Is Mandatory" })
-
+        if (!valid.isValidObjectId(bookId)) { return res.status(400).send({ status: false, msg: " valid book id is required"}); }
         if (!rating) return res.status(400).send({ status: false, message: "rating Is Mandatory" })
-        
         if (!(rating >= 1 && rating <= 5)) {
             return res.status(400).send({ status: false, msg: "Rating should be inbetween 1-5 " });
         }
-        
 
         const findBook = await bookModel.find({ bookId: bookId, isDeleted: false })
-            // .select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
             if(!findBook) return res.status(404).send({status:false, message: "Book not Available"})
-
-         const findAndUpdateBook = await bookModel.findOneAndUpdate
-         ({ bookId: bookId, isDeleted: false },{$inc:{reviews:1}},{new:true});
-
-        let obj={
-            bookId: bookId,
-            reviewedBy: reviewedBy,
-            reviewedAt: moment(),
-            rating: rating,
-            review: review
-          }
-
-          const createdReview = await reviewModel.create(obj)
+         await bookModel.findOneAndUpdate({ bookId: bookId, isDeleted: false },{$inc:{reviews:1}});
+        
+     if(reviewedBy==="" || typeof reviewedBy ==="number" ||  typeof reviewedBy=== "boolean"){
+        reviewData.reviewedBy="Guest"
+     }
+     else{
+        if(!valid.isValidName(reviewedBy)){
+            return res.status(404).send({status:false, message: "huh"})
+        }
+     }
+        reviewData.bookId=bookId
+        reviewData.reviewedAt= moment()
+          const createdReview = await reviewModel.create(reviewData)
           res.status(201).send({ status: true, message: "success", data: createdReview });
-
-          
-
-
     }catch(error) {
         res.status(500).send({ status: false, err: error.message });
       }
 }
 
-module.exports = { createReviwe};
+const updateReview= async (req,res)=>{
+    let bookId=req.params.bookId
+    let reviewId=req.params.reviewId
+    let reviewDetails=req.body
+    let{reviewedBy,rating,review}=reviewDetails
+    if (!valid.isValidObjectId(bookId&&reviewId)){
+        return res.status(400).send({ status: false, msg: "plz provide valid id" }); 
+    }
+
+    if (!valid.isValidRequestBody(reviewDetails)) { return res.status(400).send({ status: false, msg: "plz provide data To Be Updated" }); }
+
+    let dataToBeUpdated= await reviewModel.findOne({bookId:bookId,_id:reviewId,isDeleted:false})
+    if(!dataToBeUpdated){
+        return res.status(400).send({ status: false, msg: "data not found" }); 
+    }
+    if (!(rating >= 1 && rating <= 5)) {
+        return res.status(400).send({ status: false, msg: "Rating should be inbetween 1-5 " });
+    }
+    if(reviewedBy==="" || typeof reviewedBy ==="number" ||  typeof reviewedBy=== "boolean"){
+        reviewData.reviewedBy="Guest"
+     }
+     else{
+        if(!valid.isValidName(reviewedBy)){
+            return res.status(404).send({status:false, message: "huh"})
+        }
+     }
+    let updatedData=await reviewModel.findByIdAndUpdate(dataToBeUpdated._id,{reviewedBy:reviewedBy,rating:rating,review:review},{new:true})
+   
+
+   return res.status(200).send({msg:"done",data:updatedData})
+
+}
+
+module.exports = { createReviwe,updateReview};

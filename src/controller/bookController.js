@@ -9,7 +9,7 @@ const mongoose=require('mongoose')
 const createbook=async function (req,res){
 try{
     let data =req.body
-    let {title,excerpt,userId,ISBN,category,subcategory,reviews,releasedAt}=data
+    let {title,excerpt,userId,ISBN,category,subcategory,releasedAt}=data
 
      //===emptyRequest===//
      if (!valid.isValidRequestBody(data)) { return res.status(400).send({ status: false, msg: "plz provide data" }); }
@@ -53,10 +53,10 @@ if(userId){
   const findUser = await userModel.findById( userId )
   if (!findUser) return res.status(404).send({ status: false, message: "This User Not exist" })
   }
-    
+
 
   const returnBook = await bookModel.find({ $and: [data, { isDeleted: false }] })
-  .select({title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+  .select('title excerpt userId category releasedAt reviews').sort({ title: 1 })
 if (returnBook.length > 0) {
   return res.status(200).send({ status: true, count: returnBook.length, message: "Book list", data: returnBook })
 } else {
@@ -72,10 +72,9 @@ const getById= async (req,res)=>{
   let data=req.params.bookId
   if(data){
     if (!mongoose.Types.ObjectId.isValid(data )) {
-      return res.status(400).send({ status: false, msg: "!!Oops blog id is not valid" });}
+      return res.status(400).send({ status: false, msg: "!!Oops bookid id is not valid" });}
     }
   let allbooks= await bookModel.findById(data)
-  console.log(allbooks)
   if(!allbooks){
     return res.status(400).send({status:false,msg:"book not found"})
   }

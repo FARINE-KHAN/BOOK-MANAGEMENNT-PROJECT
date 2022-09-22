@@ -15,11 +15,13 @@ router.post("/login",userController.loginUser)
 
 // =============================================BOOK API==================================================
 
-router.post("/books",middleware.authentication,middleware.authorisation,bookController.createbook)
+router.post("/books",bookController.createbook)
 router.get("/books",middleware.authentication,bookController.getBook)
 router.get("/books/:bookId",bookController.getById)
 
 router.post("/books/:bookId/review",reviewController.createReviwe)
+router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
+
 
 
 router.all("/*", (req, res) => { res.status(400).send({ status: false, message: "Endpoint is not correct" }) })

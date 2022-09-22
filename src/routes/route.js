@@ -6,21 +6,26 @@ const reviewController= require("../controller/reviewController")
 const middleware=require("../middleware/middle")
 
 
-// ============================================USER API======================================================
+// ============================================USER API======================================================//
 
 router.post("/register",userController.createUser)
 router.post("/login",userController.loginUser)
 
-// ==========================================================================================================
+// ==========================================================================================================//
 
-// =============================================BOOK API==================================================
+// =============================================BOOK API==================================================//
 
 router.post("/books",bookController.createbook)
 router.get("/books",middleware.authentication,bookController.getBook)
+// router.get("/books/:bookId",middleware.authentication,bookController.getById)
+ router.put("/books/:bookId",bookController.updatebook)
 router.get("/books/:bookId",bookController.getById)
 
+// ==================================================================================================================//
+// ================================================ REVIEW API =====================================================//
 router.post("/books/:bookId/review",reviewController.createReviwe)
 router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
+router.delete("/books/:bookId/review/:reviewId",reviewController.deleteReview)
 
 
 

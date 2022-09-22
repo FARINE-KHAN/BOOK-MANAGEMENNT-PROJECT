@@ -1,10 +1,10 @@
-const bookModel =require("../models/bookModel")
-const reviewModel=require("../models/reviewModel")
-const valid=require("../validator/validator")
-const moment=require("moment")
-const mongoose=require('mongoose')
+const bookModel = require("../models/bookModel")
+const reviewModel = require("../models/reviewModel")
+const valid = require("../validator/validator")
+const moment = require("moment")
+const mongoose = require('mongoose')
 
-const createReviwe=async function(req,res){
+const createReviwe = async function (req, res) {
     try {
         const reviewData = req.body
         const bookId = req.params.bookId
@@ -71,5 +71,40 @@ const updateReview= async (req,res)=>{
    return res.status(200).send({msg:"done",data:updatedData})
 
 }
+// ==============================================================================================================================
+// ================================================DELETE API=================================================================
 
-module.exports = { createReviwe,updateReview};
+const deleteReview = async (req, res) => {
+    try{
+        let bookId = req.params.bookId; 
+        let reviewId = req.params.reviewId;
+
+        if(!mongoose.Types.ObjectId.isValid(bookId)){
+            return res.status(400).send({status: false, msg: "Invalid BookId" })
+        }
+        let book = await bookModel.findById(bookId);
+        if(book){
+            if(book['isDeleted'] == true) return res.status(400).send({status: false, message: "The book has been deleted"});
+        }else return res.status(404).send({status: false, message: "Book not found"});
+
+        if(!mongoose.Types.ObjectId.isValid(reviewId)){
+            return res.status(400).send({status: false, msg: "Invalid reviewId" })
+        }
+        let review = await reviewModel.findById(reviewId);
+        if(review){ 
+            if(review['isDeleted'] == true) return res.status(400).send({status: false, message:"Review already deleted"});
+        }else return res.status(404).send({status: false, message: "Review not found"});
+        if(review.bookId !== bookId){
+            return res.status(400).send({status: false, msg: "review id not match for this book please provide valid review id" })
+        }
+        await reviewModel.findOneAndUpdate({_id: reviewId},{isDeleted: true});
+        await bookModel.findOneAndUpdate({_id: bookId},{$inc: {reviews: -1}});
+
+        res.status(200).send({status: true, message: "Review deleted successfully"});
+    }catch(err){
+        res.status(500).send({ status: false, message: err.message });
+    }
+}
+
+
+module.exports = { createReviwe, deleteReview ,updateReview};

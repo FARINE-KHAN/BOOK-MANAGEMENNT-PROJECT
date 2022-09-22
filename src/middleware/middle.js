@@ -56,30 +56,34 @@ const authentication = (req, res, next) => {
 // ======================================================AUTHORISATION BY BOOKID=======================================================
     
 const authorisationbyBId = async function(req,res,next){
-    let bookId = req.params.bookId
+    try {
+        let bookId = req.params.bookId
+        let token = req.headers["x-auth-token"] 
+        const decodedToken =jwt.verify(token, "Project-3_Group-5")
+        
+        if(!bookId){
+           return res.status(400).send({status: false, message: "Please enter a book ID."}); }
     
-    if(!bookId){
-       return res.status(400).send({status: false, message: "Please enter a book ID."});
-    }
-    if(!mongoose.isValidObjectId(bookId)){
-       return res.status(400).send({status: false, message: 'Invalid book id'});
-    }
+        if(!mongoose.Types.ObjectId.isValid(bookId)){
+           return res.status(400).send({status: false, message: 'Invalid book id'}); }
+    
+        
+        let bookData = await bookModel.findById({_id:bookId,isDeleted:false})
+        if(!bookData){
+            return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});}
+    
+        if((decodedToken.userId !== bookData.userId.toString()))
+        { return res.status(403).send({status : false, message : "You are not a authorized user"}) };
+        
+          next();
+        
+    } catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
 
-    let bookData = await bookModel.findById({_id:bookId,isDeleted:false})
-    if(!bookData){
-        return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});
     }
-    
-    if(bookData.userId.toString() !== req.userId){
-    return res.status(403).send({status: false, message: 'Unauthorized access'});
-    }
-    
-    next()
-}
+ }
 
 // ==============================================================================================================================
 
 //exporting functions
 module.exports={authentication,authorisation,authorisationbyBId}
-
-

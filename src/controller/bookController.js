@@ -84,4 +84,26 @@ const getById= async (req,res)=>{
   result.reviewsData = reviews;
   res.status(200).send({ status: true, message: "success", data: result });
   }
-module.exports={createbook,getBook,getById}
+
+  let deleteBooks = async function (req, res) {
+    try {
+      let bookId = req.params.bookId
+
+      if (!mongoose.Types.ObjectId.isValid(bookId)) {
+      return res.status(400).send({ status: false, message: "not a valid bookId" })}
+
+      const checkBookId = await bookModel.findOne({ _id: bookId, isDeleted: false })
+      if (!checkBookId) return res.status(404).send({ status: false, message: "Book Not Found Maybe Deleted" })
+
+
+     await bookModel.findOneAndUpdate({ _id: bookId }, 
+           { isDeleted: true, deletedAt: new Date() } )
+      return res.status(200).send({ status: true, message: "Successfully Deleted" })
+
+    }
+    catch (err) {
+        res.status(500).send({ status: false, msg: err.message });
+    }
+}
+
+module.exports={createbook,getBook,getById,deleteBooks}

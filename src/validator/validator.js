@@ -10,7 +10,10 @@ const isValid = function (value) {
   if (typeof value === "string" && value.trim().length > 0) return true;
   return false;
 };
-
+const isValidn= function (value) {
+  if (typeof value === "string" && value.trim().length > 0) return true;
+  return false;
+};
 
 const isValidMobile = function (value) {
   if (typeof value === "string" && /^[0-9]\d{9}$/gi.test(value)) return true;
@@ -32,8 +35,6 @@ const isValidPassword = function (value) {
   return false;
 };
 const isValidDate = function (value) {
-  //if (typeof value === 'undefined' || value === null){return false;}
- 
   if ( typeof value === "string" && value.trim().length > 0 &&/^(18|19|20)[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value))
    return true;
   return false;

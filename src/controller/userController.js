@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const createUser = async (req, res) => {
   try {
     let data = req.body;
+  
     let { title, name, phone, email, password, address } = data;
     //===emptyRequest===//
     if (!valid.isValidRequestBody(data)) {
@@ -59,7 +60,7 @@ const createUser = async (req, res) => {
     //===creation===//
 
     let savedData = await userModel.create(data);
-    res.status(201).send({ status: true, message: "success", data: savedData });
+    res.status(201).send({ status: true, message: "success", data:[... savedData] });
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }
@@ -87,15 +88,13 @@ const loginUser = async function (req, res) {
 
     let exp = "10h";
     const token = jwt.sign(
-      { userId: user._id.toString() },
+      { userId: user._id },
       "Project-3_Group-5",
       { expiresIn: exp }
     );
     res.setHeader("x-api-key", token);
 
-    res
-      .status(201)
-      .send({ status: true, message: "Login successfully...!", data: token });
+    res.status(201).send({ status: true, message: "Login successfully...!", data: token });
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }

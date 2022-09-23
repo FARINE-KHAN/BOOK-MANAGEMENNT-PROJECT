@@ -1,16 +1,12 @@
 const mongoose = require("mongoose");
 
 const isValidName = function (value) {
-  if ( typeof value === "string" && value.trim().length > 0 && /^[A-Z][a-z]*\s[A-Z][a-z]\D*$/.test(value))
+  if (  /^[A-Z][a-z]*\s[A-Z][a-z]\D*$/.test(value))
     {return true;}
    return false;
 };
 
 const isValid = function (value) {
-  if (typeof value === "string" && value.trim().length > 0) return true;
-  return false;
-};
-const isValidn= function (value) {
   if (typeof value === "string" && value.trim().length > 0) return true;
   return false;
 };
@@ -35,7 +31,7 @@ const isValidPassword = function (value) {
   return false;
 };
 const isValidDate = function (value) {
-  if ( typeof value === "string" && value.trim().length > 0 &&/^(18|19|20)[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value))
+  if (/^(18|19|20)[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value))
    return true;
   return false;
 };

@@ -12,7 +12,7 @@ email: { type:String, required:true, unique:true },
 
 password: { type:String,  required:true, },
 
-address: { street: {type:String}, city: {type:String}, pincode: {type:String}},
+address: { street:String, city:String, pincode:String},
 
 },{timestamps:true})
 

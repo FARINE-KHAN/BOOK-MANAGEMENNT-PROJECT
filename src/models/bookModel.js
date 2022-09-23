@@ -5,7 +5,8 @@ const bookSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        trim:true
         
     },
     excerpt: {
@@ -39,7 +40,8 @@ const bookSchema = mongoose.Schema({
         default: 0
     },
     deletedAt: {
-        type: Date
+        type: Date,
+        default:null
     },
     isDeleted: {
         type: Boolean,

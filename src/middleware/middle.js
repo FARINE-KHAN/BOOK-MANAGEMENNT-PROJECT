@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose')
-
 const bookModel = require("../models/bookModel");
 
 
@@ -26,18 +25,21 @@ const authentication = (req, res, next) => {
     }
 };
 
-// ====================================================================================================================================
-    // ============================================AUTHORISATION===============================================================
+
+// ============================================AUTHORISATION===============================================================
 
 
-    const authorisation = function (req, res, next) {
+    const authorisation =async  function (req, res, next) {
 
     try {
-        let token = req.headers["x-auth-token"]
-        if(!token)token = req.headers["X-AUTH-TOKEN"]
-        // let decodedtoken = jwt.verify(token, "Project-3_Group-5")
         let decodedtoken=req.token
         let userId = req.body.userId;
+     if (!mongoose.Types.ObjectId.isValid(userId)) 
+     { return res.status(400).send({ status: false, msg: "enter valid user id"}); }  
+      let user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).send({ status: false, msg: "no such user exist" });
+    }   
         if (decodedtoken.userId != userId) {
             return res.status(403).send({ status: false, msg: "you are not authorise" })
         }
@@ -51,30 +53,23 @@ const authentication = (req, res, next) => {
 
 }
 
-// ====================================================================================================================================
-
 // ======================================================AUTHORISATION BY BOOKID=======================================================
     
 const authorisationbyBId = async function(req,res,next){
     try {
         let bookId = req.params.bookId
-        let token = req.headers["x-auth-token"] 
-        const decodedToken =jwt.verify(token, "Project-3_Group-5")
-        
-        if(!bookId){
-           return res.status(400).send({status: false, message: "Please enter a book ID."}); }
-    
+        let decodedtoken=req.token
+        // if(!bookId){
+        //    return res.status(400).send({status: false, message: "Please enter a book ID."}); }
         if(!mongoose.Types.ObjectId.isValid(bookId)){
            return res.status(400).send({status: false, message: 'Invalid book id'}); }
-    
-        
-        let bookData = await bookModel.findById({_id:bookId,isDeleted:false})
+
+        let bookData = await bookModel.findOne({_id:bookId,isDeleted:false})
         if(!bookData){
             return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});}
     
-        if((decodedToken.userId !== bookData.userId.toString()))
+        if((decodedtoken.userId !== bookData.userId.toString()))
         { return res.status(403).send({status : false, message : "You are not a authorized user"}) };
-        
           next();
         
     } catch (error) {

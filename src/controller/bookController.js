@@ -8,8 +8,8 @@ const mongoose = require("mongoose");
 const createbook = async function (req, res) {
   try {
     let data = req.body;
-    let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
-      data;
+    let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data;
+
     //                                <<===emptyRequest===>>                                   //
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, msg: "plz provide data" });
@@ -19,18 +19,21 @@ const createbook = async function (req, res) {
     //---title---//
     if(!valid.isValid(title)){ return res.status(400).send({status: false,msg: " title is required", });}
     const dublicatetitle = await bookModel.findOne({ title: title });
-    if(dublicatetitle){ return res.status(400).send({status: false,msg: " title should be unique", });}
+    if(dublicatetitle){ return res.status(409).send({status: false,msg: " title should be unique", });}
+
     //---excerpt---//
     if (!valid.isValid(excerpt)) {return res.status(400).send({ status: false, msg: " excerpt is required" }); }
+
     //---userId---//
     if(!userId){return res.status(400).send({ status: false, msg: " userId is required" });}
     if (!valid.isValidObjectId(userId)) {return res.status(400).send({ status: false, msg: " userId is not valid" });
     }
    
     //---ISBN---//
-    if(!valid.isValidA(ISBN) ){ return res.status(400).send({ status: false, msg: " ISBN is required" });}
+    if (!valid.isValid(ISBN)) {return res.status(400).send({ status: false, msg: " ISBN is required" }); }
+    if(!valid.isValidA(ISBN) ){ return res.status(400).send({ status: false, msg: " ISBN is Invalid" });}
     const dublicateISBN = await bookModel.findOne({ ISBN: ISBN });
-    if (dublicateISBN) { return res.status(400).send({ status: false, msg: " ISBN is required" }); }
+    if (dublicateISBN) { return res.status(409).send({ status: false, msg: " ISBN is Already present" }); }
     //---category---//
     if (!valid.isValid(category)) {return res.status(400).send({ status: false, msg: " category is required" });}
     //---subcategory---//
@@ -54,7 +57,7 @@ const getBook = async function (req, res) {
     const { userId, category, subcategory } = data;
 
     if (userId) {
-      if (!mongoose.Types.ObjectId.isValid(data.userId)) { return res.status(400).send({ status: false, msg: "!!Oops User id is not valid" });}
+      if (!mongoose.Types.ObjectId.isValid(data.userId)) { return res.status(400).send({ status: false, msg: "User id is not valid" });}
 
       // const findUser = await userModel.findById( userId )
       // if (!findUser) return res.status(404).send({ status: false, message: "This User Not exist" })
@@ -86,14 +89,14 @@ const getById = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(data)) {
         return res
           .status(400)
-          .send({ status: false, msg: "!!Oops blog id is not valid" });
+          .send({ status: false, msg: "!!Oops Book id is not valid" });
       }
     }
-    let allbooks = await bookModel.findById(data);
 
-    if (!allbooks || allbooks.isDeleted === true) {
-      return res.status(404).send({ status: false, msg: "book not found" });
-    }
+    let allbooks = await bookModel.findById(data);
+    if (!allbooks) { return res.status(404).send({ status: false, msg: "book not found" });}
+    if ( allbooks.isDeleted === true) { return res.status(404).send({ status: false, msg: "book is Deleted" }); }
+
     let reviews = await reviewModel
       .find({ bookId: data })
       .select("reviewedBy reviewedAt rating review");
@@ -116,10 +119,9 @@ const updatebook = async function (req, res) {
         .send({ status: false, msg: "enter valid bookId " });
     }
     let book = await bookModel.findById(bookId);
-    if (!book || book.isDeleted === true) {
-      return res.status(404).send({ status: false, msg: "No book found" });
-    }
-
+    if (!book) { return res.status(404).send({ status: false, msg: "No book found" });}
+    if (book.isDeleted === true) { return res.status(404).send({ status: false, msg: "Book is Deleted" });}
+    
     let data = req.body;
     let { title, excerpt, releasedAt, ISBN } = data;
 
@@ -127,10 +129,13 @@ const updatebook = async function (req, res) {
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, msg: "plz provide data" });
     }
+    
     //======uniquecase=====///
+
     if (title) {
       const dublicatetitle = await bookModel.findOne({ title: title });
-      if (!valid.isValid(title) || dublicatetitle) {
+      if(! typeof title === "string" && typeof title==""){ return res.status(400).send({status: false,msg: " title is required", });}
+      if (dublicatetitle) {
         return res
           .status(400)
           .send({ status: false, msg: " title is required/already in use" });
@@ -148,7 +153,7 @@ const updatebook = async function (req, res) {
       }
     }
     if (excerpt) {
-      if (!valid.isValid(excerpt)) {
+      if (!valid.isValid(excerpt)) { ////Isko Dubaara Dekhna h
         return res
           .status(400)
           .send({ status: false, msg: " excerpt is required" });

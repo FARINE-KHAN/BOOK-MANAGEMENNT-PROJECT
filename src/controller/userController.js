@@ -15,23 +15,27 @@ const createUser = async (req, res) => {
     //--title--//
     if (!title) {return res.status(400).send({ status: false, message: "Title is required" })}
     if (!["Mr", "Mrs", "Miss"].includes(title)) {return res.status(400).send({ status: false, message: "Title should contain Mr.,Mrs.,Miss" });}
+    
     //--name--//
     if(!valid.isValid(name)){return res.status(400).send({ status: false, message: "name is required" })}
     if (!valid.isValidName(name)) { return res.status(400).send({status: false,
-          msg: " full name(Name Surname=>Jane Does)first character must be capital...!",
+          msg: " Name's first character must be capital...!",
         });}
+
     //--phone--//  
     if(!valid.isValid(phone)){return res.status(400).send({ status: false, message: "phone is required" })}
     if(!valid.isValidMobile(phone)){return res.status(400).send({ status: false, message: " only 10 character " })}
    const dublicatePhone = await userModel.findOne({ phone: phone });
    if (dublicatePhone) {return res.status(400).send({ status: false, msg: "phone must be unique...!",});}
+
    //--email--//
    if(!valid.isValid(email)){return res.status(400).send({ status: false, message: "email is required" })}
-   if(!valid.isValidEmail(email)){return res.status(400).send({ status: false, message: "email should be valid" })}
+   if(!valid.isValidEmail(email)){return res.status(400).send({ status: false, message: "emailId is required and must be unique and must be in valid format =>example@gmail.com...!" })}
    const dublicateEmail = await userModel.findOne({ email: email });
     if (dublicateEmail) { return res.status(400).send({  status: false,
-     msg: " emailId is required and must be unique and must be in valid format =>example@gmail.com...!", });}
-    //--password--//
+      msg: " Email Already Present", });}
+    
+      //--password--//
     if(!valid.isValid(password)){return res.status(400).send({ status: false, message: "password is required" })}
     if (!valid.isValidPassword(password)) {return res.status(400).send({status: false,
     msg: "Your password must contain at least one alphabet one number and one special character minimum 8character maximum 15",
@@ -71,26 +75,14 @@ const loginUser = async function (req, res) {
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, msg: "plz provide data" });
     }
-    if (!valid.isValidPassword(password)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          msg: "Your password must contain at least one alphabet one number and minimum 8character maximum 15",
-        });
-    }
-    if (!valid.isValidEmail(email)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          msg: " emailId is required and must be unique...!",
-        });
-    }
-    
+
+    if(!valid.isValid(password)){return res.status(400).send({ status: false, message: "password is required" })}
+
+   if(!valid.isValid(email)){return res.status(400).send({ status: false, message: "email is required" })}
+
     const user = await userModel.findOne({ email: email, password: password });
     if (!user) {
-      return res.status(400).send({ status: false, msg: "User Not found" });
+      return res.status(400).send({ status: false, msg: "Email Or Password is Incorrect" });
     }
 
     let exp = "10h";
@@ -99,7 +91,7 @@ const loginUser = async function (req, res) {
       "Project-3_Group-5",
       { expiresIn: exp }
     );
-    res.setHeader("x-auth-token", token);
+    res.setHeader("x-api-key", token);
 
     res
       .status(201)

@@ -9,7 +9,7 @@ const bookModel = require("../models/bookModel");
 
 const authentication = (req, res, next) => {
     try {
-        let token = req.headers["x-auth-token"];
+        let token = req.headers["x-api-key"];
         if (!token)
             return res.status(401).send({ status: false, msg: "token is required" });
         jwt.verify(token, "Project-3_Group-5", function (error, decoded) {

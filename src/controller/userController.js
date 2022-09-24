@@ -60,7 +60,7 @@ const createUser = async (req, res) => {
     //===creation===//
 
     let savedData = await userModel.create(data);
-    res.status(201).send({ status: true, message: "success", data:[... savedData] });
+    res.status(201).send({ status: true, message: "success", data:savedData});
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }
@@ -90,7 +90,7 @@ const loginUser = async function (req, res) {
     const token = jwt.sign(
       { userId: user._id },
       "Project-3_Group-5",
-      { expiresIn: exp }
+      { expiresIn: "24h" }
     );
     res.setHeader("x-api-key", token);
 

@@ -130,21 +130,23 @@ const updatebook = async function (req, res) {
     
     //======uniquecase=====///
 
-    if (title || title==="") {
-      const dublicatetitle = await bookModel.findOne({ title: title });
-      if (!valid.isValid(title)||dublicatetitle) {
-        return res .status(400).send({ status: false, msg: " title is required or already in use" });
+    if (title|| title==="") {
+
+      if (valid.isValid(title)) {
+        const dublicatetitle = await bookModel.findOne({ title: title })
+        if(dublicatetitle)
+       { return res .status(400).send({ status: false, msg: " this title is already in use" });}
+      }else{
+         return res .status(400).send({ status: false, msg: " not valid provide proper title" });
       }
     }
     if (ISBN|| ISBN==="") {
-      const dublicateISBN = await bookModel.findOne({ ISBN: ISBN });
-      if (!valid.isValidA(ISBN) || dublicateISBN) {
-        return res
-          .status(400)
-          .send({
-            status: false,
-            msg: " ISBN is required or ISBN already in used",
-          });
+      if (valid.isValid(title)) {
+        const dublicateISBN = await bookModel.findOne({ ISBN: ISBN })
+        if(dublicateISBN)
+       { return res .status(400).send({ status: false, msg: " this ISBN is already in use" });}
+      }else{
+         return res .status(400).send({ status: false, msg: " not valid provide proper ISBN" });
       }
     }
     if (excerpt||excerpt==="") {
@@ -164,7 +166,7 @@ const updatebook = async function (req, res) {
     }
 
     let updatedBook = await bookModel.findOneAndUpdate(
-      { _id: bookId },{ title, excerpt, releasedAt, ISBN },{ new: true }
+      { _id: bookId },{ title,excerpt, releasedAt, ISBN },{ new: true }
     );
     return res.status(200).send({ status: true, message: "success", data: updatedBook });
   } catch (error) {

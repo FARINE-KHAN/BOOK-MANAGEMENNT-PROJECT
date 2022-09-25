@@ -1,6 +1,7 @@
 const userModel = require("../models/UserModel");
 const valid = require("../validator/validator");
 const jwt = require("jsonwebtoken");
+const moment = require("moment")
 
 //===========================================create user=====================================//
 const createUser = async (req, res) => {
@@ -86,18 +87,17 @@ const loginUser = async function (req, res) {
       return res.status(400).send({ status: false, msg: "Email Or Password is Incorrect" });
     }
 
-    let exp = "10h";
+    let exp = "20h";
     const token = jwt.sign(
       { userId: user._id },
       "Project-3_Group-5",
-      { expiresIn: "24h" }
+      { expiresIn: exp }
     );
     res.setHeader("x-api-key", token);
-
-    res.status(201).send({ status: true, message: "Login successfully...!", data: token });
+    let datas= {token:token, userId:user._id, iat:moment(), exp:exp}
+    res.status(201).send({ status: true, message: "Login successfully...!", data: datas });
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }
 };
-//farheen=happiness
 module.exports = { createUser, loginUser };

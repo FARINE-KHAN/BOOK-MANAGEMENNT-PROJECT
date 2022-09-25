@@ -14,11 +14,7 @@ const createReview = async function (req, res) {
     }
     const { rating, reviewedBy } = reviewData;
     if (!valid.isValidObjectId(bookId)) {
-      return res
-        .status(400)
-        .send({ status: false, msg: " valid book id is required" });
-    }
-    
+      return res.status(400).send({ status: false, msg: " valid book id is required" }); }
     let present = await bookModel.findById(bookId)
     if (!present) { return res.status(404).send({ status: false, msg: "Book not Available" }); }
     if (present.isDeleted === true) { return res.status(404).send({ status: false, msg: "Book is deleted" }); }
@@ -41,14 +37,11 @@ const createReview = async function (req, res) {
       }
     }
 
-   const book = await bookModel.findOneAndUpdate(
-      { bookId: bookId, isDeleted: false },
-      { $inc: { reviews: 1 } }
-    );
+   const book = await bookModel.findByIdAndUpdate( bookId,{ $inc: { reviews: 1 } } );
 
     reviewData.bookId = bookId;
-    
     reviewData.reviewedAt = moment();
+    
     const createdReview = await reviewModel.create(reviewData);
 
     const data= await reviewModel.findOne(reviewData).populate("bookId").select({updatedAt:0,createdAt:0,__v:0})
@@ -59,7 +52,9 @@ const createReview = async function (req, res) {
     res.status(500).send({ status: false, err: error.message });
   }
 };
-//======================================update review=======================================//
+
+//==============================================update review=========================================//
+
 const updateReview = async (req, res) => {
   try {
     let bookId = req.params.bookId;
@@ -121,37 +116,23 @@ const deleteReview = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).send({ status: false, msg: "Invalid BookId" })
     }
-
     if (!mongoose.Types.ObjectId.isValid(reviewId)) {
       return res.status(400).send({ status: false, msg: "Invalid reviewId" })
     }
-
-    let book = await bookModel.findById(bookId);
-    if (book) {
-
-      if (!book) return res.status(404).send({ status: false, message: "Book not found with this bookId" });
-
-      if (book['isDeleted'] == true) return res.status(400).send({ status: false, message: "The book is already deleted" });
-
-      if (book['reviews'] == 0) return res.status(400).send({ status: false, message: "no review present:(" });
-
-    } 
-
-
     let review = await reviewModel.findById(reviewId);
     if (review) {
-
-      if (review['isDeleted'] == true) return res.status(400).send({ status: false, message: "Review has been deleted" });
-
-
       if (review.bookId != bookId) {
         return res.status(400).send({ status: false, message: "the review from this bookId is not valid" })
       }
-
+      if (review['isDeleted'] == true) return res.status(400).send({ status: false, message: "Review already deleted" });
     } else if (!review) return res.status(404).send({ status: false, message: "Review not found" });
+    let book = await bookModel.findById(bookId);
+    if (book) {
+      if (book['isDeleted'] == true) return res.status(400).send({ status: false, message: "The book is already deleted" });
 
-
-
+      if (book['reviews'] == 0) return res.status(400).send({ status: false, message: "no review present:(" });
+    } 
+    
     await reviewModel.findByIdAndUpdate(reviewId, { isDeleted: true });
 
     await bookModel.findByIdAndUpdate(bookId, { $inc: { reviews: -1 } });

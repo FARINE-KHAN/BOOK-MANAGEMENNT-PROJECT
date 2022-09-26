@@ -7,12 +7,12 @@ const moment = require("moment")
 const createUser = async (req, res) => {
   try {
     let data = req.body;
-  
     let { title, name, phone, email, password, address } = data;
     //===emptyRequest===//
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, msg: "plz provide data" });
     }
+    
     //                              <<===mandatory/format===>>                                     //
     //--title--//
     if (!title) {return res.status(400).send({ status: false, message: "Title is required" })}
@@ -40,17 +40,16 @@ const createUser = async (req, res) => {
       //--password--//
     if(!valid.isValid(password)){return res.status(400).send({ status: false, message: "password is required" })}
     if (!valid.isValidPassword(password)) {return res.status(400).send({status: false,
-    msg: "Your password must contain at least one alphabet one number and one special character minimum 8character maximum 15",
+    msg: "Your password must contain at least one alphabet one number minimum 8character maximum 15",
         });
     }
     if (address) {
       if (typeof address !== "object") {return res.status(400).send({ status: false,
             msg: "address should be in object format only", });}
 
-      if (address.street) {
         if (typeof address.street !== "string") { return res.status(400).send({ status: false, msg: "provid street address" });
         }
-      } else if (address.city) {
+        if (address.city) {
         if (typeof address.city !== "string") { return res .status(400) .send({ status: false, msg: "provid city address" });
         }
       } else if (address.pincode) {
@@ -86,7 +85,6 @@ const loginUser = async function (req, res) {
     if (!user) {
       return res.status(400).send({ status: false, msg: "Email Or Password is Incorrect" });
     }
-
     let exp = "20h";
     const token = jwt.sign(
       { userId: user._id },
@@ -100,4 +98,5 @@ const loginUser = async function (req, res) {
     res.status(500).send({ status: false, err: error.message });
   }
 };
+
 module.exports = { createUser, loginUser };

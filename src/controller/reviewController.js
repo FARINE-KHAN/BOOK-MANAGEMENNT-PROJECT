@@ -45,15 +45,13 @@ const createReview = async function (req, res) {
     const createdReview = await reviewModel.create(reviewData);
 
     const data= await reviewModel.findOne(reviewData).populate("bookId").select({updatedAt:0,createdAt:0,__v:0})
-    res
-      .status(201)
-      .send({ status: true, message: "success", data: data  });
+    res.status(201).send({ status: true, message: "success", data: data  });
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }
 };
 
-//==============================================update review=========================================//
+//=============================================update review=========================================//
 
 const updateReview = async (req, res) => {
   try {
@@ -89,21 +87,17 @@ const updateReview = async (req, res) => {
     }
     if (rating) {
       if (!(rating >= 1 && rating <= 5)) {
-        return res.status(400).send({ status: false, msg: "Rating should be inbetween 1-5 " });
-      }
-    }
+        return res.status(400).send({ status: false, msg: "Rating should be inbetween 1-5 " }); }}
 
     let updatedData = await reviewModel.findByIdAndUpdate(
       dataToBeUpdated._id,
       { reviewedBy: reviewedBy, rating: rating, review: review },
       { new: true }
     ).populate("bookId");
-    
-
+  
     return res.status(200).send({ msg: "done", data: updatedData });
   } catch (error) {
-    res.status(500).send({ status: false, message: err.message });
-
+    res.status(500).send({ status: false, message: err.message })
   }
 };
 //===============================================DELETEAPI======================================//

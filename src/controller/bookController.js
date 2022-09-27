@@ -167,7 +167,7 @@ const updatebook = async function (req, res) {
       } else {
         return res.status(400).send({
           status: false,
-          message: "Book ISBN must be string and 14 digits with '-'.",
+          message: "Book ISBN must be string and valid",
         });
       }
     }

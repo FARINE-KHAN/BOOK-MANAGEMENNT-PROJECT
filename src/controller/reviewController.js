@@ -80,9 +80,14 @@ const updateReview = async (req, res) => {
     if (!dataToBeUpdated) {
       return res.status(404).send({ status: false, msg: "data not found" });
     }
-    if (reviewedBy || reviewedBy === "") {
-      if (!valid.isValidName(reviewedBy)) {
-        return res.status(404).send({ status: false, message: "provide your name" });
+    if (reviewedBy) {
+      if (valid.isValidName(reviewedBy)) {
+        dataToBeUpdated.reviewedBy = reviewedBy.trim();
+      } else {
+        return res.status(400).send({
+          status: false,
+          message: "Name's first character must be capital...!",
+        });
       }
     }
     if (rating) {
@@ -91,7 +96,7 @@ const updateReview = async (req, res) => {
 
     let updatedData = await reviewModel.findByIdAndUpdate(
       dataToBeUpdated._id,
-      { reviewedBy: reviewedBy, rating: rating, review: review },
+      { reviewedBy: dataToBeUpdated.reviewedBy, rating: rating, review: review },
       { new: true }
     ).populate("bookId");
   
